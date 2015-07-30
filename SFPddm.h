@@ -1,6 +1,6 @@
 /*
-  SFPddm.h - SFPddm library 
-  
+  SFPddm.h - SFPddm library
+
 Copyright 2013 Luka Mustafa - Musti, musti@wlan-si.net
 
 This file is part of the SFPddm library for Arduino
@@ -32,27 +32,19 @@ class SFPddm
   // user-accessible "public" interface
   public:
     SFPddm(void);
-    uint8_t begin(void);
-    void getRawInfo(uint8_t addr, uint8_t *data);
-    uint8_t getStatus();
-    uint8_t getSupported();
-    uint8_t readMeasurements();
-    uint8_t getControl();
-    void setControl(uint8_t data);
-    int16_t getTemperature();
+    uint8_t  begin(void);
+    uint8_t  getStatus();
+    uint8_t  getSupported();
+    uint8_t  readMeasurements();
+    uint8_t  getControl();
+    void     setControl(uint8_t data);
+    int16_t  getTemperature();
     uint16_t getVoltage();
     uint16_t getTXcurrent();
     uint16_t getTXpower();
     uint16_t getRXpower();
     uint16_t getAlarms();
     uint16_t getWarnings();
-
-  // library-accessible "private" interface
-  private:
-    void getCalibrationData();
-    uint16_t calibrateMeasurement(uint16_t rawdata, uint16_t slope, int16_t offset);
-    int16_t calibrateTemperature(int16_t rawdata, uint16_t slope, int16_t offset);
-    uint16_t calibrateRXpower(uint16_t rawdata, float *calibrationRX);
 };
 
 #endif

@@ -19,7 +19,7 @@ with the SFPddm library. If not, see http://www.gnu.org/licenses/.
 */
 #include "Arduino.h"
 #include <SFPddm.h>
-#include "I2C.h"
+#include <i2c_t3.h>
 
 // Creating an object of SFP DDM library
 SFPddm sfp;
@@ -33,73 +33,47 @@ int count = 0;
 void setup()
 {
   Serial.begin(9600);
-  
+
+  Wire.begin(I2C_MASTER,0,I2C_PINS_18_19,I2C_PULLUP_INT, I2C_RATE_400);
+
+  pinMode(13, OUTPUT);
+  digitalWrite(13, HIGH);
   //initialize
   Serial.print("Initialized 0x");
-  byte err = sfp.begin();
-  Serial.println(err,HEX);
-  
-  //get supported operations
+  sfp.begin();
+  digitalWrite(13, LOW);
   supp = sfp.getSupported();
   Serial.print("Supported 0x");
   Serial.println(supp,HEX);
-  
-  
+
 }
 
 // Main operation loop
-void loop(){
+void loop() {
 
-  if(supp&0x40){
-    //readMeasurements from the SFP and check for errors
-    if(!sfp.readMeasurements()){
+  if(supp & 0x40){
+    digitalWrite(13, HIGH);
+    if( ! sfp.readMeasurements() ) {
       Serial.println("");
-      Serial.print("SFPddm monitoring, reading:");
+      Serial.print("SFPddm monitoring:");
       Serial.println(count++);
-      
-      Serial.print("Temperature: ");
-      Serial.print(sfp.getTemperature()/256,DEC);
-      Serial.println(" C");
-      
-      Serial.print("Voltage: ");
-      Serial.print(sfp.getVoltage(),DEC);
-      Serial.println(" uV");
-      
-      Serial.print("TX current: ");
-      Serial.print(sfp.getTXcurrent(),DEC);
-      Serial.println(" uA");
-      
-      Serial.print("TX power: ");
-      Serial.print(sfp.getTXpower(),DEC);
-      Serial.println(" uW");
-      
-      Serial.print("RX power: ");
-      Serial.print(sfp.getRXpower(),DEC);
-      Serial.println(" uW");
-      
-      Serial.print("Warnings: 0x");
-      Serial.println(sfp.getWarnings(),HEX);
-      
-      Serial.print("Alarms: 0x");
-      Serial.println(sfp.getAlarms(),HEX);
-      
-      //get control register
-      byte control = sfp.getControl();
-      Serial.print("Control: 0x");
-      Serial.println(control,HEX);
-      
-      //set control register
-      byte command=0x00;
-      //0x40 - disable TX
-      //0x80 - rate select
-      sfp.setControl((control&0xB7)|(command&0x48));
-      //Serial.println("TX disabled");
+
+      Serial.print("Temperature:");
+      Serial.println(sfp.getTemperature()/256,DEC);
+
+      Serial.print("Voltage:");
+      Serial.println(sfp.getVoltage(),DEC);
+
+      Serial.print("TX current:");
+      Serial.println(sfp.getTXcurrent(),DEC);
+
+      Serial.print("TX power:");
+      Serial.println(sfp.getTXpower(),DEC);
+
+      Serial.print("RX power:");
+      Serial.println(sfp.getRXpower(),DEC);
     }
-    else{
-      Serial.print("Error! Check if SFP is present.");
-      //restart
-      setup();   
-    }
+    digitalWrite(13, LOW);
   }
   delay(1000);
 }
